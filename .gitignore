@@ -1,6 +1,9 @@
 # app environments
 app*env*
 
+# VS code stuff
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
