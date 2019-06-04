@@ -76,3 +76,6 @@ class KanbanTaskList:
     def task_json_list_to_task_obj_list(self, task_json_list: list) -> list:
         if task_json_list:
             return [KanbanTask(task) for task in task_json_list]
+
+if __name__ == '__main__':
+    pass

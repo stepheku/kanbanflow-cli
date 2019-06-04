@@ -2,7 +2,9 @@ import os
 import base64
 import requests
 import json
-import pdb
+from datetime import datetime
+from dateutil.parser import parse
+
 
 class KanbanFlowConnector:
     pass
@@ -80,16 +82,14 @@ def check_mandatory_fields(mandatory_fields: list = None,
         if set(or_mandatory_fields) != set(keys_without_values):
             return True
         else:
-            pdb.set_trace()
             raise(AttributeError('One of the mandatory fields are blank: {}'.format(
                 ', '.join(keys_without_values))))
 
 
-def format_group_date():
-    # TODO:
-    # Things to handle:
-    # 1. Datetime object
-    # 2. Parsed date format mm/dd/yyyy
-    # 3. Parsed date format yyyy/mm/dd
-    # Maybe check out the dateutil library
-    pass
+def format_group_date(datetime_str: str = None, 
+                      datetime_obj: datetime = None) -> str:
+    datetime_format = '%Y-%m-%d'
+    if datetime_str:
+        return parse(datetime_str).strftime(datetime_format)
+    elif datetime_obj:
+        return datetime_obj.strftime(datetime_format)

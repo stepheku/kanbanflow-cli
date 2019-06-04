@@ -13,3 +13,6 @@ class KanbanSubTask:
 
     def __str__(self):
         return 'KanbanSubTask object: {}'.format(self.name)
+
+if __name__ == "__main__":
+    pass
