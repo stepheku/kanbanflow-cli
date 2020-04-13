@@ -13,6 +13,22 @@ class KanbanTaskList:
 
     def get_all_task_json(self) -> dict:
         return api.get_with_api_headers(self.api_url)
+    
+    def get_task_name_by_task_id(self, task_id: str) -> str:
+        task_name = ''
+
+        for col in self.all_task_json:
+            for task in col.get('tasks'):
+                if task.get('_id') == task_id:
+                    task_name = task.get('name')
+                    break
+
+        if task_name:
+            return task_name
+
+        else:
+            task_resp = api.get_with_api_headers(self.api_url + '/' + task_id)
+            return task_resp.get('name')
 
     def get_column_index(self, column_name: str = None,
                          column_id: str = None) -> int:
