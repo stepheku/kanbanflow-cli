@@ -2,7 +2,9 @@ import os
 from kanbanflow_cli.kanban_board import KanbanBoard
 from kanbanflow_cli.kanban_task_list import KanbanTask, KanbanTaskList
 from kanbanflow_cli.kanban_subtask import KanbanSubTask
-import kanbanflow_cli.kanbanflow_menu as kanbanflow_menu
+from kanbanflow_cli.kanbanflow_menu import menu_dict
+from PyInquirer import style_from_dict, Token, prompt, Separator
+from pprint import pprint
 
 print(
 r"""
@@ -24,31 +26,19 @@ board = KanbanBoard()
 task_list = KanbanTaskList()
 print('Connected to KanbanFlow board: {}'.format(board.board_name))
 
-for key, val in kanbanflow_menu.menu_dict.items():
-    print('{}. {}'.format(key, val))
+questions = [
+    {
+        'type': 'list',
+        'name': 'theme',
+        'message':'What size do you need?',
+        'choices': [val for val in menu_dict.values()],
+        'filter': lambda val: val.lower(),
+    },
+]
 
-while True:
-    option_choice = input('Select a menu option: ')
-    try:
-        option_choice = int(option_choice)
-        if option_choice in kanbanflow_menu.menu_dict.keys():
-            break
-    except ValueError:
-        pass
+answers = prompt(questions)
 
-if option_choice == 1:
-    for idx, col_name in enumerate(board.get_board_columns_names(), 1):
-        print('{}. {}'.format(idx, col_name))
-    while True:
-        col_option_choice = input('Select a column option: ')
-        try:
-            col_option_choice = int(col_option_choice)
-            if col_option_choice <= len(board.get_board_columns_names()):
-                break
-        except ValueError:
-            pass
-    for idx, task_name in enumerate(task_list.get_task_list_by_column_index(col_option_choice-1)[:10]):
-        print('{}. {}'.format(idx, task_name))
+pprint(answers)
 
 if __name__ == "__main__":
     pass
