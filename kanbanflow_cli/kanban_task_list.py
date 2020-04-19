@@ -7,12 +7,17 @@ from kanbanflow_cli.kanban_subtask import KanbanSubTask
 
 
 class KanbanTaskList:
-    def __init__(self):
+    def __init__(self, limit: int=None):
+        self.limit = limit
         self.api_url = urljoin(api.base_url, 'tasks')
         self.all_task_json = self.get_all_task_json()
 
-    def get_all_task_json(self) -> dict:
-        return api.get_with_api_headers(self.api_url)
+    def get_all_task_json(self) -> list:
+        if self.limit and self.limit != 20 and self.limit <= 100:
+            api_url = self.api_url + '?limit={}'.format(self.limit)
+        else:
+            api_url = self.api_url
+        return api.get_with_api_headers(api_url)
     
     def get_task_name_by_task_id(self, task_id: str) -> str:
         task_name = ''
