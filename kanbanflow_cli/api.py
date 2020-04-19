@@ -48,6 +48,12 @@ def get_with_api_headers(url: str) -> dict:
 
 
 def post_with_api_headers(url: str, data: dict) -> requests.post:
+    """
+    Runs a POST with headers per KanbanFlow API
+
+    :param url: URL to be retrieved
+    :param data: Data to be posted in a dictionary
+    """
     api_key = os.environ.get('KBFLOW_API')
     headers = api_key_b64_header(api_key)
     headers['Content-type'] = 'application/json'
