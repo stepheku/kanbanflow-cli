@@ -17,7 +17,7 @@ class KanbanTask:
         self.column_id = task_json['columnId']
         self.responsible_user_id = task_json.get('responsibleUserId')
         if task_json.get('subTasks'):
-            self.sub_task_list = self.subtask_json_list_to_subtask_obj_list(
+            self.subtask_list = self.subtask_json_list_to_subtask_obj_list(
                 task_json.get('subTasks'))
 
         if task_list is not None:
@@ -43,8 +43,10 @@ class KanbanTask:
 
     def subtask_json_list_to_subtask_obj_list(self,
                                               subtask_json_list: list) -> list:
-        return [KanbanSubTask(subtask) for subtask in subtask_json_list]
-
+        return [KanbanSubTask(subtask_json=subtask, subtask_idx=idx, 
+                              task_id=self.id) 
+                for idx, subtask in enumerate(subtask_json_list)]
+    
     def __repr__(self):
         return 'KanbanTask object: {}'.format(self.name)
 
