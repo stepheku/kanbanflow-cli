@@ -60,12 +60,15 @@ def post_with_api_headers(url: str, data: dict) -> requests.post:
     return requests.post(url=url, json=data, headers=headers)
 
 
-def url_with_param(url: str, param: str, param_value: str) -> str:
+def url_with_param(url: str, param_dict: dict=None) -> str:
     """
     Returns an appended URL for a GET with a supplied parameter and value
     """
-    if param and param_value:
-        return '{}?{}={}'.format(url, param, param_value)
+    if param_dict is None:
+        return url
+    else:
+        return url + '?' + '&'.join('{}={}'.format(k, v) 
+                                    for (k, v) in param_dict.items())
 
 
 def check_mandatory_fields(mandatory_fields: list = None,

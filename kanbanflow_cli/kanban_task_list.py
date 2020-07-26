@@ -63,9 +63,10 @@ class KanbanTaskList:
     def get_task_list_by_column_id(self, column_id: str) -> list:
         # TODO: Handle an invalid column_id
         if not self.all_task_json:
+            param_dict = {'columnId': str(column_id)}
             return api.get_with_api_headers(
                 api.url_with_param(
-                    self.api_url, 'columnId', str(column_id))
+                    url=self.api_url, param_dict=param_dict)
             )[0]
         else:
             col_idx = self.get_column_index(column_id=column_id)
@@ -75,9 +76,10 @@ class KanbanTaskList:
     def get_task_list_by_column_index(self, column_idx: int) -> list:
         # TODO: Handle an invalid index
         if not self.all_task_json:
+            param_dict = {'columnIndex': str(column_idx)}
             return api.get_with_api_headers(
                 api.url_with_param(
-                    self.api_url, 'columnIndex', str(column_idx))
+                    url=self.api_url, param_dict=param_dict)
             )[0]
         else:
             return self.task_json_list_to_task_obj_list(
@@ -86,8 +88,10 @@ class KanbanTaskList:
     def get_task_list_by_column_name(self, column_name: str) -> list:
         # TODO: Need to have a way to validate column_name against columns
         if not self.all_task_json:
+            param_dict = {'columnName': str(column_name)}
             return api.get_with_api_headers(
-                api.url_with_param(self.api_url, 'columnName', column_name)
+                api.url_with_param(
+                    url=self.api_url, param_dict=param_dict)
             )[0]
         else:
             col_idx = self.get_column_index(column_name)
