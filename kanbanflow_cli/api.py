@@ -4,6 +4,7 @@ import requests
 import json
 from datetime import datetime
 from dateutil.parser import parse
+import urllib.parse
 
 base_url = "https://kanbanflow.com/api/v1/"
 
@@ -17,7 +18,8 @@ class KanbanFlowAPICalls:
         pass
 
     def get_board(self):
-        return get_with_api_headers(api_url_extend_path_seg(base_url, ["board"]))
+        return get_with_api_headers(
+            api_url_extend_path_seg(base_url, ["board"]))
 
     def get_all_tasks(self, limit: int=20):
         url = api_url_extend_path_seg(base_url, ["tasks"])
@@ -41,6 +43,15 @@ class KanbanFlowAPICalls:
         if column_id is not None:
             url = api_url_extend_path_seg(base_url, ["tasks"])
             param_dict = {'columnId': column_id}
+
+            return get_with_api_headers(
+                url_with_param(url=url, param_dict=param_dict)
+            )
+
+    def get_tasks_by_column_name(self, column_name: str=None) -> list:
+        if column_name is not None:
+            url = api_url_extend_path_seg(base_url, ["tasks"])
+            param_dict = {"columnName": urllib.parse.quote(column_name)}
 
             return get_with_api_headers(
                 url_with_param(url=url, param_dict=param_dict)

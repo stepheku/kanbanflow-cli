@@ -20,6 +20,7 @@ class TestAPICalls(unittest.TestCase):
         self.all_tasks = api_caller.get_all_tasks(limit=1)
         self.sample_task_id = self.all_tasks[0].get("tasks")[0].get("_id")
         self.sample_column_id = self.all_tasks[0].get("columnId")
+        self.sample_column_name = self.all_tasks[0].get("columnName")
 
     def test_get_board(self):
         """
@@ -41,6 +42,14 @@ class TestAPICalls(unittest.TestCase):
         """
         task_list = api_caller.get_tasks_by_column_id(
             column_id=self.sample_column_id)
+        self.assertIsInstance(task_list, list)
+
+    def test_get_tasks_by_column_name(self):
+        """
+        sample column_name returns a list of tasks
+        """
+        task_list = api_caller.get_tasks_by_column_name(
+            column_name=self.sample_column_name)
         self.assertIsInstance(task_list, list)
 
     def tearDown(self):
