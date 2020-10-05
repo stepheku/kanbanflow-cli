@@ -3,6 +3,7 @@ from kanbanflow_cli.api import KanbanFlowAPICalls
 import configparser
 from pathlib import Path
 import os
+import setup_tests
 
 api_caller = KanbanFlowAPICalls()
 file_path = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -10,12 +11,7 @@ file_path = Path(os.path.dirname(os.path.abspath(__file__)))
 
 class TestAPICalls(unittest.TestCase):
     def setUp(self):
-        config = configparser.ConfigParser()
-        config_file_path = os.path.abspath(
-            os.path.join(file_path.parents[0], "config.ini")
-        )
-        config.read(os.path.join(config_file_path))
-        os.environ["KBFLOW_API"] = config["api_key"]["kbflow_api_key"]
+        setup_tests.set_kbflow_api_environ_var("config.ini")
 
         self.all_tasks = api_caller.get_all_tasks(limit=1)
         self.sample_task_id = self.all_tasks[0].get("tasks")[0].get("_id")
