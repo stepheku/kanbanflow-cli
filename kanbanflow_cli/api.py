@@ -21,28 +21,31 @@ class KanbanFlowAPICalls:
         return get_with_api_headers(
             api_url_extend_path_seg(base_url, ["board"]))
 
-    def get_all_tasks(self, limit: int=20):
-        url = api_url_extend_path_seg(base_url, ["tasks"])
-        param_dict = {'limit':limit}
-
-        if not isinstance(limit, int):
-            raise TypeError('limit is an int type')
-        elif limit == 20:
-            return get_with_api_headers(url)
-        else:
-            return get_with_api_headers(
-                url_with_param(url=url, param_dict=param_dict)
-            )
-
     def get_task_by_id(self, task_id: str) -> dict:
         return get_with_api_headers(
             api_url_extend_path_seg(base_url, ["tasks", task_id])
         )
 
-    def get_tasks_by_column_id(self, column_id: str=None) -> list:
-        if column_id is not None:
+    def get_all_tasks(self):
+        """
+        Returns all tasks on a board
+        """
+        url = api_url_extend_path_seg(base_url, ["tasks"])
+        return get_with_api_headers(url_with_param(url=url))
+
+    def get_tasks_by_column_id(self, column_id: str=None, limit: int=None) -> list:
+        if column_id is None:
+            raise(AttributeError("column_id is a required argument"))
+
+        else:
             url = api_url_extend_path_seg(base_url, ["tasks"])
             param_dict = {'columnId': column_id}
+
+            if not isinstance(limit, int):
+                param_dict["limit"] = 20
+            
+            else:
+                param_dict["limit"] = limit
 
             return get_with_api_headers(
                 url_with_param(url=url, param_dict=param_dict)
@@ -52,7 +55,6 @@ class KanbanFlowAPICalls:
         if column_name is not None:
             url = api_url_extend_path_seg(base_url, ["tasks"])
             param_dict = {"columnName": urllib.parse.quote(column_name)}
-
             return get_with_api_headers(
                 url_with_param(url=url, param_dict=param_dict)
             )
