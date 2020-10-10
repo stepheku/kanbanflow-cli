@@ -17,7 +17,7 @@ class KanbanFlowAPICalls:
     def __init__(self):
         pass
 
-    def get_board(self):
+    def get_board(self) -> dict:
         return get_with_api_headers(
             api_url_extend_path_seg(base_url, ["board"]))
 
