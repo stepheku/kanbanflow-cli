@@ -19,10 +19,10 @@ class KanbanFlowAPICalls:
         self.url_tasks = api_url_extend_path_seg(base_url, ["tasks"])
 
     def get_board(self) -> dict:
-        return get_with_api_headers(self.url_board)
+        return get_with_api_headers_to_dict(self.url_board)
 
     def get_task_by_id(self, task_id: str) -> dict:
-        return get_with_api_headers(
+        return get_with_api_headers_to_dict(
             api_url_extend_path_seg(base_url, ["tasks", task_id])
         )
 
@@ -31,7 +31,7 @@ class KanbanFlowAPICalls:
         Returns all tasks on a board
         """
         url = api_url_extend_path_seg(base_url, ["tasks"])
-        return get_with_api_headers(url_with_param(url=url))
+        return get_with_api_headers_to_dict(url_with_param(url=url))
 
     def get_tasks_by_column_id(self, column_id: str = None, limit: int = None) -> list:
         if column_id is None:
@@ -47,46 +47,46 @@ class KanbanFlowAPICalls:
             else:
                 param_dict["limit"] = limit
 
-            return get_with_api_headers(url_with_param(url=url, param_dict=param_dict))
+            return get_with_api_headers_to_dict(url_with_param(url=url, param_dict=param_dict))
 
     def get_tasks_by_column_name(self, column_name: str = None) -> list:
         if column_name is not None:
             url = api_url_extend_path_seg(base_url, ["tasks"])
             param_dict = {"columnName": urllib.parse.quote(column_name)}
-            return get_with_api_headers(url_with_param(url=url, param_dict=param_dict))
+            return get_with_api_headers_to_dict(url_with_param(url=url, param_dict=param_dict))
 
     def get_subtasks(self, task_id: str):
-        return get_with_api_headers(
+        return get_with_api_headers_to_dict(
             api_url_extend_path_seg(base_url, ["tasks", task_id, "subtasks"])
         )
 
     def get_task_labels(self, task_id: str):
-        return get_with_api_headers(
+        return get_with_api_headers_to_dict(
             api_url_extend_path_seg(base_url, ["tasks", task_id, "labels"])
         )
 
     def get_task_collaborators(self, task_id: str):
-        return get_with_api_headers(
+        return get_with_api_headers_to_dict(
             api_url_extend_path_seg(base_url, ["tasks", task_id, "collaborators"])
         )
 
     def get_task_comments(self, task_id: str):
-        return get_with_api_headers(
+        return get_with_api_headers_to_dict(
             api_url_extend_path_seg(base_url, ["tasks", task_id, "comments"])
         )
 
     def get_task_attachments(self, task_id: str):
-        return get_with_api_headers(
+        return get_with_api_headers_to_dict(
             api_url_extend_path_seg(base_url, ["tasks", task_id, "attachments"])
         )
 
     def get_task_time_entries(self, task_id: str):
-        return get_with_api_headers(
+        return get_with_api_headers_to_dict(
             api_url_extend_path_seg(base_url, ["tasks", task_id, "time-entries"])
         )
 
     def get_task_manual_time_entry(self, task_id: str, manual_time_entry_id: str):
-        return get_with_api_headers(
+        return get_with_api_headers_to_dict(
             api_url_extend_path_seg(
                 base_url,
                 ["tasks", task_id, "manual-time-entries", manual_time_entry_id],
@@ -94,12 +94,12 @@ class KanbanFlowAPICalls:
         )
 
     def get_task_relations(self, task_id: str):
-        return get_with_api_headers(
+        return get_with_api_headers_to_dict(
             api_url_extend_path_seg(base_url, ["tasks", task_id, "relations"])
         )
 
     def get_users(self):
-        return get_with_api_headers(api_url_extend_path_seg(base_url, ["users"]))
+        return get_with_api_headers_to_dict(api_url_extend_path_seg(base_url, ["users"]))
 
     def create_task(
         self,
@@ -228,7 +228,7 @@ def api_key_b64_header(api_key: str) -> dict:
         return headers
 
 
-def get_with_api_headers(url: str) -> dict:
+def get_with_api_headers_to_dict(url: str) -> dict:
     """
     Runs a GET with headers per KanbanFlow API
     :param url: URL to be retrieved
