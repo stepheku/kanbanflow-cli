@@ -1,5 +1,6 @@
 import unittest
 from kanbanflow_cli.api import KanbanFlowAPICalls
+import kanbanflow_cli.api as api
 from kanbanflow_cli.kanban_task_list import KanbanTaskList
 from kanbanflow_cli.kanban_board import KanbanBoard
 import configparser
@@ -69,13 +70,15 @@ class TestCreateDeleteTaskAPICalls(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.api_caller.create_task(name="Test Task", columnId=None)
 
-    def test_create_task_delete_task_(self):
+    def test_create_task_delete_task(self):
         create_task_resp = self.api_caller.create_task(
             name="Test Task", columnId=self.sample_column_id
         )
-        create_task_id = create_task_resp.get("taskId")
+        create_task_id = api.get_dict_val_from_resp(
+            resp=create_task_resp, key="taskId"
+        )
 
-        self.assertIsInstance(create_task_resp, dict)
+        self.assertEquals(create_task_resp.status_code, 200)
 
         delete_task_resp = self.api_caller.delete_task(task_id=create_task_id)
 
@@ -85,7 +88,7 @@ class TestCreateDeleteTaskAPICalls(unittest.TestCase):
         del os.environ["KBFLOW_API"]
 
 
-class TestCreateDeleteSubtaskAPICalls(unittest.TestCase):
+class TestCreateModifyDeleteSubtaskAPICalls(unittest.TestCase):
     def setUp(self):
         self.api_caller = KanbanFlowAPICalls()
         setup_tests.set_kbflow_api_environ_var("config.ini")
@@ -104,14 +107,19 @@ class TestCreateDeleteSubtaskAPICalls(unittest.TestCase):
         create_task_resp = self.api_caller.create_task(
             name="Test Task", columnId=self.sample_column_id
         )
-        create_task_id = create_task_resp.get("taskId")
+        create_task_id = api.get_dict_val_from_resp(
+            resp=create_task_resp, key="taskId"
+        )
 
         create_subtask_resp = self.api_caller.create_subtask(
             task_id=create_task_id, name="Test subtask"
         )
-        create_subtask_index = create_subtask_resp.get("insertIndex")
+        create_subtask_index = api.get_dict_val_from_resp(
+            resp=create_subtask_resp, key="insertIndex"
+        )
 
-        self.assertIsInstance(create_subtask_resp, dict)
+        self.assertEquals(create_subtask_resp.status_code, 200)
+
 
         delete_subtask_by_index_resp = self.api_caller.delete_subtask(
             task_id=create_task_id, index=str(create_subtask_index)
@@ -125,13 +133,15 @@ class TestCreateDeleteSubtaskAPICalls(unittest.TestCase):
         create_task_resp = self.api_caller.create_task(
             name="Test Task", columnId=self.sample_column_id
         )
-        create_task_id = create_task_resp.get("taskId")
+        create_task_id = api.get_dict_val_from_resp(
+            resp=create_task_resp, key="taskId"
+        )
 
         create_subtask_resp = self.api_caller.create_subtask(
             task_id=create_task_id, name="Test subtask"
         )
 
-        self.assertIsInstance(create_subtask_resp, dict)
+        self.assertEquals(create_subtask_resp.status_code, 200)
 
         delete_subtask_by_index_resp = self.api_caller.delete_subtask(
             task_id=create_task_id, name="Test subtask"

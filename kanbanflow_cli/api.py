@@ -119,7 +119,7 @@ class KanbanFlowAPICalls:
         subTasks: list = None,
         labels: list = None,
         collaborators: list = None,
-    ):
+    ) -> requests.Response:
         """
         Creates a new task on the board (per kanbanflow api documentation)
         """
@@ -248,7 +248,7 @@ def delete_with_api_headers(url: str) -> requests.Response:
     return requests.delete(url, headers=headers)
 
 
-def post_with_api_headers(url: str, data: dict) -> requests.post:
+def post_with_api_headers(url: str, data: dict) -> requests.Response:
     """
     Runs a POST with headers per KanbanFlow API
 
@@ -258,7 +258,7 @@ def post_with_api_headers(url: str, data: dict) -> requests.post:
     api_key = os.environ.get("KBFLOW_API")
     headers = api_key_b64_header(api_key)
     headers["Content-type"] = "application/json"
-    return json.loads(requests.post(url=url, json=data, headers=headers).text)
+    return requests.post(url=url, json=data, headers=headers)
 
 
 def url_with_param(url: str, param_dict: dict = None) -> str:
@@ -316,3 +316,11 @@ def format_group_date(datetime_str: str = None, datetime_obj: datetime = None) -
         return parse(datetime_str).strftime(datetime_format)
     elif datetime_obj:
         return datetime_obj.strftime(datetime_format)
+
+
+def get_dict_val_from_resp(resp: requests.Response=None, key: str=None) -> str:
+    """
+    Given a requests Response object and a key, returns the value
+    """
+    resp_dict = json.loads(resp.text)
+    return resp_dict.get(key)
