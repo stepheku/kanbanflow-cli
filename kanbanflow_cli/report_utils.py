@@ -6,8 +6,7 @@ Module contains functions that are specific for reporting, such as:
 - Time spent on certain tasks
 """
 
-import requests
-import json
+import re
 import csv
 from urllib.parse import urljoin
 from datetime import datetime
@@ -16,11 +15,14 @@ import kanbanflow_cli.api as api
 from kanbanflow_cli.kanban_task_list import KanbanTask, KanbanTaskList
 
 DATETIME_STR_FORMAT = "%Y-%m-%dT0000Z-5"
+DATETIME_STR_RETURN_FORMAT = "%Y-%m-%dT%H:%M:%S"
+DATETIME_STR_REGEX = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
 
 
 def get_time_entries_for_board(from_time: str, to_time: str) -> list:
-    api_url = urljoin(api.base_url,
-                      'time-entries?from={}&to={}'.format(from_time, to_time))
+    api_url = urljoin(
+        api.base_url, "time-entries?from={}&to={}".format(from_time, to_time)
+    )
 
     return api.get_with_api_headers(api_url)
 
@@ -29,21 +31,18 @@ def get_time_entries_for_board_last_day() -> list:
     last_day_from = datetime.strftime(
         datetime.today() + timedelta(days=-1), format=DATETIME_STR_FORMAT
     )
-    last_day_to = datetime.strftime(
-        datetime.today(), format=DATETIME_STR_FORMAT
-    )
-    return get_time_entries_for_board(
-        from_time=last_day_from, to_time=last_day_to
-    )
+    last_day_to = datetime.strftime(datetime.today(), format=DATETIME_STR_FORMAT)
+    return get_time_entries_for_board(from_time=last_day_from, to_time=last_day_to)
 
 
 def get_time_entries_for_board_current_day() -> list:
-    last_day_from = datetime.strftime(
-        datetime.today(), format=DATETIME_STR_FORMAT
-    )
+    last_day_from = datetime.strftime(datetime.today(), format=DATETIME_STR_FORMAT)
     last_day_to = datetime.strftime(
         datetime.today() + timedelta(days=1), format=DATETIME_STR_FORMAT
     )
+    return get_time_entries_for_board(from_time=last_day_from, to_time=last_day_to)
+
+
 def get_time_entries_for_board_current_week() -> list:
     """
     Get all time entries on the board for the current week (Sunday to Saturday)
@@ -100,16 +99,15 @@ def get_task_names_for_time_entries(
 
 
 if __name__ == "__main__":
-    print('Connecting to KanbanFlow task list...')
+    print("Connecting to KanbanFlow task list...")
     task_list = KanbanTaskList()
-    print('Connected to task list')
-    a = get_time_entries_for_board('2020-04-01T00:00Z-5', '2020-04-02T00:00Z-5')
-    task_names = get_task_names_for_time_entries(time_entries=a, 
-                                                 task_list=task_list)
+    print("Connected to task list")
+    a = get_time_entries_for_board_last_day()
+    task_names = get_task_names_for_time_entries(time_entries=a, task_list=task_list)
     uniq_task_names = set(task_names)
-    with open('output.csv', 'w', newline='') as f:
-        header = ['Task name']
+    with open("output.csv", "w", newline="") as f:
+        header = ["Task name"]
         writer = csv.DictWriter(f, fieldnames=header)
         writer.writeheader()
         for task in uniq_task_names:
-            writer.writerow({'Task name': task})
+            writer.writerow({"Task name": task})
