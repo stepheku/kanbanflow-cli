@@ -44,13 +44,43 @@ def get_time_entries_for_board_current_day() -> list:
     last_day_to = datetime.strftime(
         datetime.today() + timedelta(days=1), format=DATETIME_STR_FORMAT
     )
+def get_time_entries_for_board_current_week() -> list:
+    """
+    Get all time entries on the board for the current week (Sunday to Saturday)
+    """
+    cur_week_from = datetime.today() - timedelta(days=(datetime.today().weekday() + 1))
+    cur_week_to = cur_week_from + timedelta(days=6)
+
     return get_time_entries_for_board(
-        from_time=last_day_from, to_time=last_day_to
+        from_time=cur_week_from.strftime(DATETIME_STR_FORMAT),
+        to_time=cur_week_to.strftime(DATETIME_STR_FORMAT),
     )
 
 
-def get_task_names_for_time_entries(time_entries: list,
-                                    task_list: KanbanTaskList) -> list:
+def add_time_difference_in_time_entry(list_of_dict: list) -> list:
+    """
+    Time entries only give start and stop, this adds into the dictionary the
+    time difference and the start date
+    """
+    for x in list_of_dict:
+        start_time_str = x["startTimestamp"]
+        start_time_str_format = re.findall(DATETIME_STR_REGEX, start_time_str)[0]
+        start_time = datetime.strptime(
+            start_time_str_format, DATETIME_STR_RETURN_FORMAT
+        )
+
+        end_time_str = x["endTimestamp"]
+        end_time_str_format = re.findall(DATETIME_STR_REGEX, end_time_str)[0]
+        end_time = datetime.strptime(end_time_str_format, DATETIME_STR_RETURN_FORMAT)
+        x["timeDifferenceSeconds"] = (end_time - start_time).seconds
+        x["attributedDate"] = end_time.strftime("%Y-%m-%d")
+
+    return list_of_dict
+
+
+def get_task_names_for_time_entries(
+    time_entries: list, task_list: KanbanTaskList
+) -> list:
     """
     When doing a GET request to get time entries, a list of dictionaries is
     returned with the taskId. This function uses the taskId to give a list of
@@ -58,13 +88,15 @@ def get_task_names_for_time_entries(time_entries: list,
 
     :param: time_entries: List of dictionaries of time entries, from GET request
 
-    :param: task_list: KanbanTaskList object that contains all tasks on the 
+    :param: task_list: KanbanTaskList object that contains all tasks on the
     board
 
     :return: Returns a list of task names in the time entrylist
     """
-    return [task_list.get_task_name_by_task_id(task_id=x.get('taskId')) 
-            for x in time_entries]
+    return [
+        task_list.get_task_name_by_task_id(task_id=x.get("taskId"))
+        for x in time_entries
+    ]
 
 
 if __name__ == "__main__":
